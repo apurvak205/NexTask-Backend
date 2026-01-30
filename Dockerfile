@@ -5,7 +5,7 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Step 3: Copy the built jar file into container
-COPY target/Task-Management-0.0.1-SNAPSHOT.jar app.jar
+COPY Task-Management/target/Task-Management-0.0.1-SNAPSHOT.jar app.jar
 
 # Step 4: Expose port (Render will override via PORT variable)
 EXPOSE 8080

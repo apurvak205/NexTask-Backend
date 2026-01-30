@@ -1,6 +1,5 @@
 # Step 1: Use official Java image
-FROM openjdk:20-jdk-slim
-
+FROM eclipse-temurin:20-jdk
 
 # Step 2: Set working directory inside container
 WORKDIR /app

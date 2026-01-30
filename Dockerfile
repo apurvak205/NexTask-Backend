@@ -1,14 +1,23 @@
-# Step 1: Use official Java image
-FROM eclipse-temurin:20-jdk
-
-# Step 2: Set working directory inside container
+﻿# Stage 1: Build with Maven pre-installed
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# Step 3: Copy the built jar file into container
-COPY Task-Management/target/Task-Management-0.0.1-SNAPSHOT.jar app.jar
+# Copy Maven files
+COPY pom.xml .
+COPY src ./src
 
-# Step 4: Expose port (Render will override via PORT variable)
+# Build
+RUN mvn clean package -DskipTests
+
+# Stage 2: Runtime
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Copy JAR from build stage
+COPY --from=build /app/target/Task-Management-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose port
 EXPOSE 8080
 
-# Step 5: Run the jar with dynamic port
-CMD ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]
+# Run application
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]

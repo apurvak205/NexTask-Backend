@@ -1,5 +1,6 @@
 # Step 1: Use official Java image
-FROM openjdk:21-jdk-slim
+FROM openjdk:20-jdk-slim
+
 
 # Step 2: Set working directory inside container
 WORKDIR /app

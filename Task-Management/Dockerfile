@@ -20,4 +20,4 @@ COPY --from=build /app/target/Task-Management-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
 # Run application
-ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port="]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]

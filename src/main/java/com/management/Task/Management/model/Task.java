@@ -1,4 +1,4 @@
-package com.management.Task.Management.model;
+package com.management.task.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

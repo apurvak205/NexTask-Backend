@@ -1,10 +1,10 @@
-package com.management.Task.Management.service;
+package com.management.task.management.service;
 
-import com.management.Task.Management.dto.UserLoginRequestDTO;
-import com.management.Task.Management.dto.UserRegisterRequestDTO;
-import com.management.Task.Management.dto.UserResponseDTO;
-import com.management.Task.Management.model.User;
-import com.management.Task.Management.repository.UserRepository;
+import com.management.task.management.dto.UserLoginRequestDTO;
+import com.management.task.management.dto.UserRegisterRequestDTO;
+import com.management.task.management.dto.UserResponseDTO;
+import com.management.task.management.model.User;
+import com.management.task.management.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

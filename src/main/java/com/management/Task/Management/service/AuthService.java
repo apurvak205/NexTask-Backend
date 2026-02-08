@@ -1,9 +1,9 @@
-package com.management.Task.Management.service;
+package com.management.task.management.service;
 
-import com.management.Task.Management.dto.*;
-import com.management.Task.Management.model.User;
-import com.management.Task.Management.repository.UserRepository;
-import com.management.Task.Management.security.JwtService;
+import com.management.task.management.dto.*;
+import com.management.task.management.model.User;
+import com.management.task.management.repository.UserRepository;
+import com.management.task.management.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

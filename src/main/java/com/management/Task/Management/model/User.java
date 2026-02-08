@@ -1,10 +1,8 @@
-package com.management.Task.Management.model;
+package com.management.task.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
-import com.management.Task.Management.model.AuthProvider;
 
 
 @Entity

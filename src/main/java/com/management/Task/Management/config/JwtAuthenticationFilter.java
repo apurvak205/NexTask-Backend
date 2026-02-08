@@ -1,6 +1,6 @@
-package com.management.Task.Management.config;
+package com.management.task.management.config;
 
-import com.management.Task.Management.security.JwtService;
+import com.management.task.management.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

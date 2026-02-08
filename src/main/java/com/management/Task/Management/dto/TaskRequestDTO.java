@@ -1,4 +1,4 @@
-package com.management.Task.Management.dto;
+package com.management.task.management.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

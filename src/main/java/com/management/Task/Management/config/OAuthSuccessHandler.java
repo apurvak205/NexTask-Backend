@@ -1,8 +1,8 @@
-package com.management.Task.Management.config;
+package com.management.task.management.config;
 
-import com.management.Task.Management.model.User;
-import com.management.Task.Management.repository.UserRepository;
-import com.management.Task.Management.security.JwtService;
+import com.management.task.management.model.User;
+import com.management.task.management.repository.UserRepository;
+import com.management.task.management.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import com.management.Task.Management.model.AuthProvider;
+import com.management.task.management.model.AuthProvider;
 
 
 @Component

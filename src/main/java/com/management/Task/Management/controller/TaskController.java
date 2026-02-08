@@ -1,9 +1,9 @@
-package com.management.Task.Management.controller;
+package com.management.task.management.controller;
 
-import com.management.Task.Management.dto.TaskRequestDTO;
-import com.management.Task.Management.dto.TaskResponseDTO;
-import com.management.Task.Management.model.Task;
-import com.management.Task.Management.service.TaskService;
+import com.management.task.management.dto.TaskRequestDTO;
+import com.management.task.management.dto.TaskResponseDTO;
+import com.management.task.management.model.Task;
+import com.management.task.management.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
-package com.management.Task.Management.security;
+package com.management.task.management.security;
 
-import com.management.Task.Management.model.User;
-import com.management.Task.Management.repository.UserRepository;
+import com.management.task.management.model.User;
+import com.management.task.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

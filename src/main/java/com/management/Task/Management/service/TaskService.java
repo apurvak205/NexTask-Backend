@@ -1,11 +1,11 @@
-package com.management.Task.Management.service;
+package com.management.task.management.service;
 
-import com.management.Task.Management.dto.TaskRequestDTO;
-import com.management.Task.Management.dto.TaskResponseDTO;
-import com.management.Task.Management.model.Task;
-import com.management.Task.Management.model.User;
-import com.management.Task.Management.repository.TaskRepository;
-import com.management.Task.Management.repository.UserRepository;
+import com.management.task.management.dto.TaskRequestDTO;
+import com.management.task.management.dto.TaskResponseDTO;
+import com.management.task.management.model.Task;
+import com.management.task.management.model.User;
+import com.management.task.management.repository.TaskRepository;
+import com.management.task.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

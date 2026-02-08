@@ -1,6 +1,6 @@
-package com.management.Task.Management.repository;
+package com.management.task.management.repository;
 
-import com.management.Task.Management.model.Task;
+import com.management.task.management.model.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

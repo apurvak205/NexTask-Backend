@@ -1,6 +1,5 @@
-package com.management.Task.Management.security;
+package com.management.task.management.security;
 
-import com.management.Task.Management.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;

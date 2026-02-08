@@ -1,4 +1,4 @@
-package com.management.Task.Management.model;
+package com.management.task.management.model;
 
 public enum AuthProvider {
     LOCAL,

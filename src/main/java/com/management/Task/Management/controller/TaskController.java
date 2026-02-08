@@ -6,12 +6,15 @@ import com.management.task.management.model.Task;
 import com.management.task.management.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
 import java.util.List;
 
+@ConditionalOnBean(DataSource.class)
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor

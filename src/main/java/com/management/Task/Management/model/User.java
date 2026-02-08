@@ -3,8 +3,11 @@ package com.management.task.management.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
+import javax.sql.DataSource;
 
+@ConditionalOnBean(DataSource.class)
 @Entity
 @Table(name = "users")
 @Data

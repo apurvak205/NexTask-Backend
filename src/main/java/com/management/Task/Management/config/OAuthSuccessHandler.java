@@ -5,6 +5,7 @@ import com.management.task.management.repository.UserRepository;
 import com.management.task.management.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import com.management.task.management.model.AuthProvider;
 
+import javax.sql.DataSource;
 
+@ConditionalOnBean(DataSource.class)
 @Component
 public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

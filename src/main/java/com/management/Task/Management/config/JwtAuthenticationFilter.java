@@ -18,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.sql.DataSource;
 import java.io.IOException;
 
-@ConditionalOnBean(DataSource.class)
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

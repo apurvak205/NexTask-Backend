@@ -20,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.sql.DataSource;
 import java.util.List;
 
-@ConditionalOnBean(DataSource.class)
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor

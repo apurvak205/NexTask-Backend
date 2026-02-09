@@ -17,7 +17,6 @@ import com.management.task.management.model.AuthProvider;
 
 import javax.sql.DataSource;
 
-@ConditionalOnBean(DataSource.class)
 @Component
 public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

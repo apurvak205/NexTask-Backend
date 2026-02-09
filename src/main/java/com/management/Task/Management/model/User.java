@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
 import javax.sql.DataSource;
 
-@ConditionalOnBean(DataSource.class)
 @Entity
 @Table(name = "users")
 @Data

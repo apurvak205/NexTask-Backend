@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 
-@ConditionalOnBean(DataSource.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

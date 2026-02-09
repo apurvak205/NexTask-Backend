@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@ConditionalOnBean(DataSource.class)
 @Service
 public class JwtService {
 

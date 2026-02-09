@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
 import javax.sql.DataSource;
 
-@ConditionalOnBean(DataSource.class)
 @Data
 @AllArgsConstructor
 public class UserRegisterResponseDTO {

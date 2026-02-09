@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 
-@ConditionalOnBean(DataSource.class)
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

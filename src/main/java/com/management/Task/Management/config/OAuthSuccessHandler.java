@@ -61,7 +61,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 
         response.sendRedirect(
-                "http://localhost:5500/dashboard.html?token=" + token
+                "https://nex-task-frontend-alpha.vercel.app/dashboard.html?token=" + token
         );
 
     }

@@ -26,6 +26,6 @@ public class TaskRequestDTO {
     private String priority;
 
     @NotNull(message = "Due date is required")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 }

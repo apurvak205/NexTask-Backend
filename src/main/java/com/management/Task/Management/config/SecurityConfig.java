@@ -34,6 +34,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
 
+                // ✅ Form login band karo — hum JWT use kar rahe hain
+                .formLogin(form -> form.disable())
+
+                // ✅ HTTP Basic auth band karo
+                .httpBasic(basic -> basic.disable())
+
+                // ✅ Stateless session — JWT ke liye zaroori
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -45,36 +52,43 @@ public class SecurityConfig {
                                 "/dashboard.html",
                                 "/login.html",
                                 "/oauth2/**",
+                                "/login/oauth2/**",   // ✅ Google callback allow karo
                                 "/api/auth/**"
                         ).permitAll()
                         .requestMatchers("/api/tasks/**").authenticated()
                         .anyRequest().authenticated()
                 )
 
-                // ✅ API calls pe 401 do, Google redirect band
+                // ✅ API pe 401 do — Google redirect bilkul band
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             String path = request.getServletPath();
                             if (path.startsWith("/api/")) {
+                                // ✅ API calls ke liye JSON 401 response
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.setContentType("application/json");
-                                response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                                response.setHeader("Access-Control-Allow-Origin",
+                                        "https://nex-task-frontend-alpha.vercel.app");
+                                response.getWriter().write("{\"error\": \"Unauthorized - Token missing or expired\"}");
                             } else {
+                                // ✅ Normal browser requests ke liye Google login
                                 response.sendRedirect("/oauth2/authorization/google");
                             }
                         })
                 )
 
+                // ✅ Google OAuth2 login
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuthSuccessHandler)
                 )
 
+                // ✅ JWT filter sabse pehle chalega
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
 
-        return http.build(); // ✅ Yeh missing tha
+        return http.build();
     }
 
     @Bean
@@ -88,7 +102,10 @@ public class SecurityConfig {
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+
+        // ✅ Wildcard "*" use karo — saare headers allow honge
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

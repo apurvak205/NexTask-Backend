@@ -19,6 +19,6 @@ public class TaskResponseDTO {
     private String status;
     private String priority;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 }

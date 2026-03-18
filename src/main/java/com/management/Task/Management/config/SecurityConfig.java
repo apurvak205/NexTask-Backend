@@ -1,7 +1,7 @@
 package com.management.task.management.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 @Configuration
@@ -36,9 +35,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ✅ JWT ke liye ye best hai
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -53,29 +51,40 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // 👇 Google OAuth enabled
+                // ✅ API calls pe 401 do, Google redirect band
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String path = request.getServletPath();
+                            if (path.startsWith("/api/")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                            } else {
+                                response.sendRedirect("/oauth2/authorization/google");
+                            }
+                        })
+                )
+
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuthSuccessHandler)
                 )
 
-                // 👇 JWT filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
 
-        return http.build();
+        return http.build(); // ✅ Yeh missing tha
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 👇 Isme apna Vercel URL add karein
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
-                "https://nex-task-frontend-alpha.vercel.app" // ✅ Ye add karna zaroori hai
+                "https://nex-task-frontend-alpha.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

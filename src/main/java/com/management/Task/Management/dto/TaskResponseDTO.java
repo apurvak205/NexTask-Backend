@@ -1,5 +1,6 @@
 package com.management.task.management.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +18,7 @@ public class TaskResponseDTO {
     private String description;
     private String status;
     private String priority;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate dueDate;
 }

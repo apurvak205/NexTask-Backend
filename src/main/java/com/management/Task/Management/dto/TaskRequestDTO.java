@@ -1,13 +1,12 @@
 package com.management.task.management.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 
 @Data
@@ -27,5 +26,6 @@ public class TaskRequestDTO {
     private String priority;
 
     @NotNull(message = "Due date is required")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate dueDate;
 }

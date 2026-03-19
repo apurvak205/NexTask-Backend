@@ -8,7 +8,6 @@ import com.management.task.management.service.AuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,14 +15,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
-@ConditionalOnBean(DataSource.class)
+// ✅ @ConditionalOnBean aur @CrossOrigin HATAO
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -35,9 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserRegisterResponseDTO> register(
             @Valid @RequestBody UserRegisterRequestDTO request) {
-
         authService.register(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new UserRegisterResponseDTO("User registered successfully"));
@@ -69,8 +64,7 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of(
                 "token", token,
-                "username", user.getName() // "Sai Tarun"
+                "username", user.getName()
         ));
     }
-
 }

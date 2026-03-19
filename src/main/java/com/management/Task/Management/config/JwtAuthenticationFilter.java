@@ -34,8 +34,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
+        String method = request.getMethod();
 
-        // ✅ Auth aur OAuth URLs skip karo — inhe JWT filter ki zaroorat nahi
+        System.out.println("=== JWT FILTER === Path: " + path + " | Method: " + method);
+
+        // OPTIONS preflight request ko seedha pass karo
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "*");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        // Auth aur OAuth URLs skip karo
         if (path.startsWith("/api/auth")
                 || path.startsWith("/oauth2")
                 || path.startsWith("/login/oauth2")) {
@@ -44,11 +57,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String authHeader = request.getHeader("Authorization");
+        System.out.println("=== AUTH HEADER === " + authHeader);
 
-        // ✅ Token bilkul nahi hai
+        // Token nahi hai
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("=== NO TOKEN === Path: " + path);
             if (path.startsWith("/api/")) {
-                // ✅ API call pe seedha 401 do — Google redirect nahi
                 sendUnauthorized(response, "Token missing");
                 return;
             }
@@ -60,6 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String username = jwtService.extractUsername(jwt);
+            System.out.println("=== USERNAME FROM TOKEN === " + username);
 
             if (username != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -68,7 +83,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    // ✅ Token valid — authentication set karo
+                    System.out.println("=== TOKEN VALID === Setting authentication");
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -81,7 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 } else {
-                    // ✅ Token invalid — API pe 401 do
+                    System.out.println("=== TOKEN INVALID ===");
                     if (path.startsWith("/api/")) {
                         sendUnauthorized(response, "Token invalid");
                         return;
@@ -90,10 +106,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // ✅ Token expired ya corrupt — Google redirect nahi, 401 do
-            logger.error("JWT processing failed: " + e.getMessage());
+            System.out.println("=== JWT ERROR === " + e.getMessage());
             if (path.startsWith("/api/")) {
-                sendUnauthorized(response, "Token expired or invalid");
+                sendUnauthorized(response, "Token expired or invalid: " + e.getMessage());
                 return;
             }
         }
@@ -101,9 +116,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // ✅ Helper method — baar baar likhne ki zaroorat nahi
     private void sendUnauthorized(HttpServletResponse response, String message)
             throws IOException {
+        System.out.println("=== SENDING 401 === " + message);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);

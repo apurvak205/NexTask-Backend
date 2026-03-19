@@ -38,14 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("=== JWT FILTER === Path: " + path + " | Method: " + method);
 
-        // OPTIONS preflight request ko seedha pass karo
         if ("OPTIONS".equalsIgnoreCase(method)) {
-            response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "*");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request, response);
             return;
+
         }
 
         // Auth aur OAuth URLs skip karo

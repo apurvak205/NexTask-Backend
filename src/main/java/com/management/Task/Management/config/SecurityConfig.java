@@ -11,8 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,14 +34,10 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-
-                // ✅ Form login band karo — hum JWT use kar rahe hain
                 .formLogin(form -> form.disable())
-
-                // ✅ HTTP Basic auth band karo
                 .httpBasic(basic -> basic.disable())
+                .requestCache(cache -> cache.requestCache(new NullRequestCache()))
 
-                // ✅ Stateless session — JWT ke liye zaroori
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -52,40 +49,39 @@ public class SecurityConfig {
                                 "/dashboard.html",
                                 "/login.html",
                                 "/oauth2/**",
-                                "/login/oauth2/**",   // ✅ Google callback allow karo
+                                "/login/oauth2/**",
                                 "/api/auth/**"
                         ).permitAll()
                         .requestMatchers("/api/tasks/**").authenticated()
                         .anyRequest().authenticated()
                 )
 
-                // ✅ API pe 401 do — Google redirect bilkul band
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             String path = request.getServletPath();
                             if (path.startsWith("/api/")) {
-                                // ✅ API calls ke liye JSON 401 response
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.setContentType("application/json");
                                 response.setHeader("Access-Control-Allow-Origin",
                                         "https://nex-task-frontend-alpha.vercel.app");
-                                response.getWriter().write("{\"error\": \"Unauthorized - Token missing or expired\"}");
+                                response.getWriter().write("{\"error\": \"Unauthorized\"}");
                             } else {
-                                // ✅ Normal browser requests ke liye Google login
                                 response.sendRedirect("/oauth2/authorization/google");
                             }
                         })
                 )
 
-                // ✅ Google OAuth2 login
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuthSuccessHandler)
+                        .authorizationEndpoint(auth -> auth
+                                .baseUri("/oauth2/authorization")
+                        )
                 )
 
-                // ✅ JWT filter sabse pehle chalega
+                // ✅ JWT filter OAuth2 se PEHLE chalega
                 .addFilterBefore(
                         jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class
+                        OAuth2AuthorizationRequestRedirectFilter.class
                 );
 
         return http.build();
@@ -102,8 +98,6 @@ public class SecurityConfig {
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // ✅ Wildcard "*" use karo — saare headers allow honge
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);

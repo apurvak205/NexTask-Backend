@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ConditionalOnBean(DataSource.class)
 @Service
 @RequiredArgsConstructor
 public class TaskService {

@@ -31,7 +31,7 @@ public class Task {
 
     private LocalDate dueDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({"password", "hibernateLazyInitializer", "handler"})
     private User user;

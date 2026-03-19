@@ -51,16 +51,17 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    // Update existing task
+    // Update task
     public TaskResponseDTO updateTask(Long id, TaskRequestDTO request) {
+        String currentUserEmail = getCurrentUserEmail();
+
+        // ✅ Direct check
+        if (!taskRepository.existsByIdAndUserEmail(id, currentUserEmail)) {
+            throw new RuntimeException("Not authorized");
+        }
+
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-
-        // Security check: only owner can update
-        String currentUserEmail = getCurrentUserEmail();
-        if (!task.getUser().getEmail().equals(currentUserEmail)) {
-            throw new RuntimeException("Not authorized to update this task");
-        }
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -73,13 +74,13 @@ public class TaskService {
 
     // Delete task
     public void deleteTask(Long id) {
+        String currentUserEmail = getCurrentUserEmail();
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
-        // Security check: only owner can delete
-        String currentUserEmail = getCurrentUserEmail();
-        if (!task.getUser().getEmail().equals(currentUserEmail)) {
-            throw new RuntimeException("Not authorized to delete this task");
+
+        if (!taskRepository.existsByIdAndUserEmail(id, currentUserEmail)) {
+            throw new RuntimeException("Not authorized");
         }
 
         taskRepository.delete(task);

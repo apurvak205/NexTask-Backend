@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/",
+                                "/health",
                                 "/index.html",
                                 "/dashboard.html",
                                 "/login.html",

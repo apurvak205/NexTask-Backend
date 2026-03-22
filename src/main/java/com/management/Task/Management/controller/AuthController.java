@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-// ✅ @ConditionalOnBean aur @CrossOrigin HATAO
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor

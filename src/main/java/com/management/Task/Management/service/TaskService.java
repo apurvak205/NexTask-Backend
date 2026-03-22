@@ -7,11 +7,9 @@ import com.management.task.management.model.User;
 import com.management.task.management.repository.TaskRepository;
 import com.management.task.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +53,7 @@ public class TaskService {
     public TaskResponseDTO updateTask(Long id, TaskRequestDTO request) {
         String currentUserEmail = getCurrentUserEmail();
 
-        // ✅ Direct check
+        //Direct check
         if (!taskRepository.existsByIdAndUserEmail(id, currentUserEmail)) {
             throw new RuntimeException("Not authorized");
         }

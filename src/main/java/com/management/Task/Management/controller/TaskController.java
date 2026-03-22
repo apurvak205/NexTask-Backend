@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// ✅ @ConditionalOnBean aur @CrossOrigin HATAO
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor

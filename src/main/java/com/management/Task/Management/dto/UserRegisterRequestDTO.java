@@ -4,9 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-
-import javax.sql.DataSource;
 
 @Data
 public class UserRegisterRequestDTO {

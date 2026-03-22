@@ -44,7 +44,6 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ OPTIONS preflight SABSE PEHLE allow karo
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/",
@@ -82,7 +81,7 @@ public class SecurityConfig {
                         )
                 )
 
-                // ✅ JWT filter OAuth2 se PEHLE
+
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         OAuth2AuthorizationRequestRedirectFilter.class
@@ -106,12 +105,12 @@ public class SecurityConfig {
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
 
-        // ✅ Wildcard headers
+        // Wildcard headers
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
-        // ✅ Preflight cache — baar baar OPTIONS na bheje
+
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

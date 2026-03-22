@@ -7,10 +7,7 @@ import com.management.task.management.model.User;
 import com.management.task.management.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
-
-import javax.sql.DataSource;
 
 @Service
 @RequiredArgsConstructor

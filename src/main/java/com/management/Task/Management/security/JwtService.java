@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ public class JwtService {
     private static final String SECRET_KEY =
             "mysecretkeymysecretkeymysecretkey123456";
 
-    // ✅ MAIN TOKEN METHOD
+    //MAIN TOKEN METHOD
     public String generateToken(UserDetails userDetails, String name) {
 
         Map<String, Object> claims = new HashMap<>();

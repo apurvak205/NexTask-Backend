@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     private static final String ALLOWED_ORIGIN =
-            "https://nex-task-frontend-alpha.vercel.app";
+            "https://my-nextask.vercel.app" ;
 
     @Override
     protected void doFilterInternal(

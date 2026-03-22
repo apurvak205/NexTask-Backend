@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.setContentType("application/json");
                                 response.setHeader("Access-Control-Allow-Origin",
-                                        "https://nex-task-frontend-alpha.vercel.app");
+                                        "https://my-nextask.vercel.app" );
                                 response.getWriter().write("{\"error\": \"Unauthorized\"}");
                             } else {
                                 response.sendRedirect("/oauth2/authorization/google");
@@ -98,7 +98,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
-                "https://nex-task-frontend-alpha.vercel.app"
+                "https://nex-task-frontend-alpha.vercel.app",
+                "https://my-nextask.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of(

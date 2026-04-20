@@ -44,10 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
 
-        // Auth aur OAuth URLs skip karo
         if (path.startsWith("/api/auth")
                 || path.startsWith("/oauth2")
-                || path.startsWith("/login/oauth2")) {
+                || path.startsWith("/login/oauth2")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }

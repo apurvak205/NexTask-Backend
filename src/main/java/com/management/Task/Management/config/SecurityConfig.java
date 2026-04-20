@@ -53,7 +53,11 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/oauth2/**",
                                 "/login/oauth2/**",
-                                "/api/auth/**"
+                                "/api/auth/**",
+
+                                // ADD THIS (Swagger)
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/api/tasks/**").authenticated()
                         .anyRequest().authenticated()
@@ -98,7 +102,8 @@ public class SecurityConfig {
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
                 "https://nex-task-frontend-alpha.vercel.app",
-                "https://my-nextask.vercel.app"
+                "https://my-nextask.vercel.app",
+                "http://localhost:10000"
         ));
 
         configuration.setAllowedMethods(List.of(

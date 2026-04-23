@@ -20,7 +20,7 @@ public class JwtService {
     private final long expirationMillis;
 
     public JwtService(
-            @Value("${JWT_SECRET}") String secretKey,
+            @Value("${JWT_SECRET:taskmanagement-default-jwt-secret-key-2026-change-me}") String secretKey,
             @Value("${JWT_EXPIRATION_MS:86400000}") long expirationMillis
     ) {
         this.secretKey = secretKey;

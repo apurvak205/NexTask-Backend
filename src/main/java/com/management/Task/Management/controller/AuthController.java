@@ -1,32 +1,27 @@
 package com.management.task.management.controller;
 
-import com.management.task.management.dto.*;
-import com.management.task.management.model.User;
-import com.management.task.management.repository.UserRepository;
-import com.management.task.management.security.JwtService;
+import com.management.task.management.dto.ForgetPasswordRequestDTO;
+import com.management.task.management.dto.ResetPasswordRequestDTO;
+import com.management.task.management.dto.UserLoginRequestDTO;
+import com.management.task.management.dto.UserLoginResponseDTO;
+import com.management.task.management.dto.UserRegisterRequestDTO;
+import com.management.task.management.dto.UserRegisterResponseDTO;
 import com.management.task.management.service.AuthService;
+import com.management.task.management.service.PasswordResetService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
-    private final JwtService jwtService;
     private final AuthService authService;
-    private final UserRepository userRepository;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     public ResponseEntity<UserRegisterResponseDTO> register(
@@ -38,32 +33,25 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody @NotNull UserLoginRequestDTO request) {
+    public ResponseEntity<UserLoginResponseDTO> login(
+            @Valid @RequestBody @NotNull UserLoginRequestDTO request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(
+            @Valid @RequestBody ForgetPasswordRequestDTO dto) {
+        passwordResetService.createResetToken(dto);
+        return ResponseEntity.ok("Reset link sent to email");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @Valid @RequestBody ResetPasswordRequestDTO dto) {
+        passwordResetService.resetPassword(
+                dto.getToken(),
+                dto.getNewPassword()
         );
-
-        User user = userRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .roles("USER")
-                        .build(),
-                user.getName()
-        );
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "username", user.getName()
-        ));
+        return ResponseEntity.ok("Password reset successful");
     }
 }

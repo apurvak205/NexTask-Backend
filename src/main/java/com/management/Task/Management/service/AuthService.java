@@ -1,11 +1,17 @@
 package com.management.task.management.service;
 
-import com.management.task.management.dto.*;
+import com.management.task.management.dto.UserLoginRequestDTO;
+import com.management.task.management.dto.UserLoginResponseDTO;
+import com.management.task.management.dto.UserRegisterRequestDTO;
+import com.management.task.management.dto.UserResponseDTO;
+import com.management.task.management.exception.BadRequestException;
+import com.management.task.management.model.AuthProvider;
 import com.management.task.management.model.User;
 import com.management.task.management.repository.UserRepository;
 import com.management.task.management.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,25 +28,28 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    // ================= REGISTER =================
     public void register(UserRegisterRequestDTO request) {
-
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new BadRequestException("Email already registered");
         }
 
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
+        user.setProvider(AuthProvider.LOCAL);
 
         userRepository.save(user);
     }
 
-    // ================= LOGIN =================
     public UserLoginResponseDTO login(UserLoginRequestDTO request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        // 1️⃣ Authenticate credentials
+        if (user.getProvider() == AuthProvider.GOOGLE) {
+            throw new BadRequestException("Use Google login for this account");
+        }
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -48,18 +57,9 @@ public class AuthService {
                 )
         );
 
-        // 2️⃣ Fetch user from DB
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 3️⃣ Load UserDetails (Spring Security way)
-        UserDetails userDetails =
-                userDetailsService.loadUserByUsername(user.getEmail());
-
-        // 4️⃣ Generate JWT token
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtService.generateToken(userDetails, user.getName());
 
-        // 5️⃣ Prepare response DTO
         UserResponseDTO userDTO = new UserResponseDTO(
                 user.getId(),
                 user.getName(),

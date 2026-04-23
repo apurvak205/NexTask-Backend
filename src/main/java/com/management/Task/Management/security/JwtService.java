@@ -1,8 +1,10 @@
 package com.management.task.management.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,22 +16,26 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY =
-            "mysecretkeymysecretkeymysecretkey123456";
+    private final String secretKey;
+    private final long expirationMillis;
 
-    //MAIN TOKEN METHOD
+    public JwtService(
+            @Value("${JWT_SECRET}") String secretKey,
+            @Value("${JWT_EXPIRATION_MS:86400000}") long expirationMillis
+    ) {
+        this.secretKey = secretKey;
+        this.expirationMillis = expirationMillis;
+    }
+
     public String generateToken(UserDetails userDetails, String name) {
-
         Map<String, Object> claims = new HashMap<>();
-        claims.put("name", name);   // 👈 username for frontend
+        claims.put("name", name);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername()) // email (secure)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)
-                )
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -48,9 +54,7 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractAllClaims(token)
-                .getExpiration()
-                .before(new Date());
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     private Claims extractAllClaims(String token) {
@@ -62,7 +66,6 @@ public class JwtService {
     }
 
     private Key getKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
-
 }

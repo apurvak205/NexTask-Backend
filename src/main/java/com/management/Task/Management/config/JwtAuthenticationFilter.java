@@ -20,11 +20,22 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String[] PUBLIC_PATH_PREFIXES = {
+            "/oauth2",
+            "/login/oauth2",
+            "/swagger-ui",
+            "/v3/api-docs"
+    };
+
+    private static final String[] PUBLIC_AUTH_PATHS = {
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/forgot-password",
+            "/api/auth/reset-password"
+    };
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-
-    private static final String ALLOWED_ORIGIN =
-            "https://my-nextask.vercel.app" ;
 
     @Override
     protected void doFilterInternal(
@@ -33,34 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getServletPath();
+        String path = request.getRequestURI();
         String method = request.getMethod();
 
-        System.out.println("=== JWT FILTER === Path: " + path + " | Method: " + method);
-
-        if ("OPTIONS".equalsIgnoreCase(method)) {
-            filterChain.doFilter(request, response);
-            return;
-
-        }
-
-        if (path.startsWith("/api/auth")
-                || path.startsWith("/oauth2")
-                || path.startsWith("/login/oauth2")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs")) {
+        if ("OPTIONS".equalsIgnoreCase(method) || isPublicPath(path)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader("Authorization");
-        System.out.println("=== AUTH HEADER === " + authHeader);
-
-        // Token nahi hai
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("=== NO TOKEN === Path: " + path);
             if (path.startsWith("/api/")) {
-                sendUnauthorized(response, "Token missing");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token missing");
                 return;
             }
             filterChain.doFilter(request, response);
@@ -71,17 +66,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String username = jwtService.extractUsername(jwt);
-            System.out.println("=== USERNAME FROM TOKEN === " + username);
-
             if (username != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    System.out.println("=== TOKEN VALID === Setting authentication");
-
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -92,20 +82,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                } else {
-                    System.out.println("=== TOKEN INVALID ===");
-                    if (path.startsWith("/api/")) {
-                        sendUnauthorized(response, "Token invalid");
-                        return;
-                    }
+                } else if (path.startsWith("/api/")) {
+                    sendUnauthorized(response, "Token invalid");
+                    return;
                 }
             }
 
         } catch (Exception e) {
-            System.out.println("=== JWT ERROR === " + e.getMessage());
             if (path.startsWith("/api/")) {
-                sendUnauthorized(response, "Token expired or invalid: " + e.getMessage());
+                sendUnauthorized(response, "Token expired or invalid");
                 return;
             }
         }
@@ -113,13 +98,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private boolean isPublicPath(String path) {
+        for (String publicAuthPath : PUBLIC_AUTH_PATHS) {
+            if (path.equals(publicAuthPath)) {
+                return true;
+            }
+        }
+
+        for (String publicPrefix : PUBLIC_PATH_PREFIXES) {
+            if (path.startsWith(publicPrefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void sendUnauthorized(HttpServletResponse response, String message)
             throws IOException {
-        System.out.println("=== SENDING 401 === " + message);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }

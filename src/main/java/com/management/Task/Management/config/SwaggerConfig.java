@@ -6,8 +6,11 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -24,11 +27,16 @@ import org.springframework.context.annotation.Configuration;
         scheme = "bearer",
         bearerFormat = "JWT"
 )
+
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        return new OpenAPI();
+        return new OpenAPI()
+                .servers(List.of(
+                        new Server().url("http://localhost:8181"),
+                        new Server().url("https://your-render-url.onrender.com")
+                ));
     }
 }

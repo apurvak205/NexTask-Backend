@@ -1,7 +1,9 @@
 package com.management.task.management.repository;
 
 import com.management.task.management.model.Task;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,4 +12,8 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByUserId(Long userId);
     boolean existsByIdAndUserEmail(Long id, String email);
+
+    @Modifying
+    @Transactional
+    void deleteByUserId(Long userId);
 }

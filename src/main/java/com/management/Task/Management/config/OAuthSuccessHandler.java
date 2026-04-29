@@ -36,6 +36,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         this.frontendBaseUrl = frontendBaseUrl;
     }
 
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,

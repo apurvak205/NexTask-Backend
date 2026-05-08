@@ -9,6 +9,8 @@ import com.management.task.management.model.User;
 import com.management.task.management.repository.PasswordResetTokenRepository;
 import com.management.task.management.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import java.util.UUID;
 
 @Service
 public class PasswordResetService {
+
+    private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
@@ -53,8 +57,11 @@ public class PasswordResetService {
 
         tokenRepository.deleteByUser(user);
         tokenRepository.save(resetToken);
+        log.info("Password reset token saved for email={}", user.getEmail());
 
+        log.info("Attempting password reset email delivery to email={}", user.getEmail());
         emailService.sendResetEmail(user.getEmail(), token);
+        log.info("Password reset email flow completed for email={}", user.getEmail());
     }
 
     public PasswordResetToken validateToken(String token) {

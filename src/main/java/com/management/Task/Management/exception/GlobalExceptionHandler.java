@@ -2,7 +2,6 @@ package com.management.task.management.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,7 +44,7 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
 
-    @ExceptionHandler({MailException.class, IllegalStateException.class})
+    @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleMailFailure(Exception ex) {
         return buildResponse(HttpStatus.BAD_GATEWAY, ex.getMessage());
     }

@@ -11,6 +11,7 @@ import com.management.task.management.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,18 +26,24 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final MailService mailService;
+    private final String frontendBaseUrl;
+    private final String resetPath;
 
     public PasswordResetService(
             UserRepository userRepository,
             PasswordResetTokenRepository tokenRepository,
             PasswordEncoder passwordEncoder,
-            EmailService emailService
+            MailService mailService,
+            @Value("${APP_FRONTEND_URL:http://localhost:3000}") String frontendBaseUrl,
+            @Value("${PASSWORD_RESET_PATH:/reset-password}") String resetPath
     ) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
+        this.mailService = mailService;
+        this.frontendBaseUrl = frontendBaseUrl;
+        this.resetPath = resetPath;
     }
 
     @Transactional
@@ -59,8 +66,13 @@ public class PasswordResetService {
         tokenRepository.save(resetToken);
         log.info("Password reset token saved for email={}", user.getEmail());
 
+        String resetLink = buildResetLink(token);
         log.info("Attempting password reset email delivery to email={}", user.getEmail());
-        emailService.sendResetEmail(user.getEmail(), token);
+        mailService.sendMail(
+                user.getEmail(),
+                "Password Reset",
+                "Reset your password using this link:\n" + resetLink
+        );
         log.info("Password reset email flow completed for email={}", user.getEmail());
     }
 
@@ -91,5 +103,13 @@ public class PasswordResetService {
         userRepository.save(user);
 
         tokenRepository.delete(resetToken);
+    }
+
+    private String buildResetLink(String token) {
+        String normalizedBaseUrl = frontendBaseUrl.endsWith("/")
+                ? frontendBaseUrl.substring(0, frontendBaseUrl.length() - 1)
+                : frontendBaseUrl;
+        String normalizedResetPath = resetPath.startsWith("/") ? resetPath : "/" + resetPath;
+        return normalizedBaseUrl + normalizedResetPath + "?token=" + token;
     }
 }

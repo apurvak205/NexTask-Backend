@@ -9,6 +9,7 @@ import com.management.task.management.model.AuthProvider;
 import com.management.task.management.model.User;
 import com.management.task.management.repository.UserRepository;
 import com.management.task.management.security.JwtService;
+import com.management.task.management.util.PasswordValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,6 +33,7 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already registered");
         }
+        PasswordValidationUtils.validate(request.getPassword());
 
         User user = new User();
         user.setName(request.getName());

@@ -10,6 +10,7 @@ import com.management.task.management.model.User;
 import com.management.task.management.repository.PasswordResetTokenRepository;
 import com.management.task.management.repository.TaskRepository;
 import com.management.task.management.repository.UserRepository;
+import com.management.task.management.util.PasswordValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,6 +66,7 @@ public class UserService {
                 throw new BadRequestException("Google account password cannot be changed here");
             }
 
+            PasswordValidationUtils.validate(request.getPassword());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             hasUpdates = true;
         }

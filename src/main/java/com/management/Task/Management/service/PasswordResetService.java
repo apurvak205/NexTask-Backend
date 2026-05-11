@@ -8,6 +8,7 @@ import com.management.task.management.model.PasswordResetToken;
 import com.management.task.management.model.User;
 import com.management.task.management.repository.PasswordResetTokenRepository;
 import com.management.task.management.repository.UserRepository;
+import com.management.task.management.util.PasswordValidationUtils;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,10 +90,7 @@ public class PasswordResetService {
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = validateToken(token);
-
-        if (newPassword.length() < 6) {
-            throw new BadRequestException("Password too short");
-        }
+        PasswordValidationUtils.validate(newPassword);
 
         User user = resetToken.getUser();
         if (user.getProvider() == AuthProvider.GOOGLE) {

@@ -29,7 +29,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public OAuthSuccessHandler(
             UserRepository userRepository,
             JwtService jwtService,
-            @Value("${APP_FRONTEND_URL:https://nex-task-frontend-alpha.vercel.app}") String frontendBaseUrl
+            @Value("${APP_FRONTEND_URL:https://my-nextask.vercel.app}") String frontendBaseUrl
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;

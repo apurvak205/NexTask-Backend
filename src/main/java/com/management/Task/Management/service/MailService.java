@@ -19,15 +19,15 @@ public class MailService {
 
     private static final Logger log = LoggerFactory.getLogger(MailService.class);
 
-    private final String apiKey;
     private final String fromEmail;
+    private final SendGrid sendGrid;
 
     public MailService(
             @Value("${SENDGRID_API_KEY}") String apiKey,
             @Value("${MAIL_FROM}") String fromEmail
     ) {
-        this.apiKey = apiKey;
         this.fromEmail = fromEmail;
+        this.sendGrid = new SendGrid(apiKey);
     }
 
     public void sendMail(String toEmail, String subject, String body) {
@@ -36,7 +36,6 @@ public class MailService {
         Content content = new Content("text/plain", body);
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sendGrid = new SendGrid(apiKey);
         Request request = new Request();
 
         try {

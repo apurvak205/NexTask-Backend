@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MailService mailService;
+    private final ApplicationEventPublisher eventPublisher;
     private final String frontendBaseUrl;
     private final String resetPath;
 
@@ -35,14 +36,14 @@ public class PasswordResetService {
             UserRepository userRepository,
             PasswordResetTokenRepository tokenRepository,
             PasswordEncoder passwordEncoder,
-            MailService mailService,
+            ApplicationEventPublisher eventPublisher,
             @Value("${APP_FRONTEND_URL:http://localhost:3000}") String frontendBaseUrl,
             @Value("${PASSWORD_RESET_PATH:/reset-password}") String resetPath
     ) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailService = mailService;
+        this.eventPublisher = eventPublisher;
         this.frontendBaseUrl = frontendBaseUrl;
         this.resetPath = resetPath;
     }
@@ -68,13 +69,8 @@ public class PasswordResetService {
         log.info("Password reset token saved for email={}", user.getEmail());
 
         String resetLink = buildResetLink(token);
-        log.info("Attempting password reset email delivery to email={}", user.getEmail());
-        mailService.sendMail(
-                user.getEmail(),
-                "Password Reset",
-                "Reset your password using this link:\n" + resetLink
-        );
-        log.info("Password reset email flow completed for email={}", user.getEmail());
+        eventPublisher.publishEvent(new PasswordResetRequestedEvent(user.getEmail(), resetLink));
+        log.info("Password reset email queued for email={}", user.getEmail());
     }
 
     public PasswordResetToken validateToken(String token) {
